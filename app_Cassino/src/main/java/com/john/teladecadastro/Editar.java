@@ -15,7 +15,6 @@ import com.john.teladecadastro.model.User;
 public class Editar extends AppCompatActivity {
 
     private EditText edit_email, edit_senha, edit_nome, edit_CPF;
-    private Button bt_salvar;
 
     private UserDAO userDAO;
 
@@ -28,7 +27,7 @@ public class Editar extends AppCompatActivity {
         edit_senha = findViewById(R.id.edit_senha);
         edit_nome = findViewById(R.id.edit_nome);
         edit_CPF = findViewById(R.id.edit_CPF);
-        bt_salvar = findViewById(R.id.bt_salvar);
+        Button bt_salvar = findViewById(R.id.bt_salvar);
 
         SharedPreferences sp = getSharedPreferences("app_Cassino", Context.MODE_PRIVATE);
         String savedNome = sp.getString("nome", "");
