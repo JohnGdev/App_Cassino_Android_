@@ -1,5 +1,7 @@
 package com.john.teladecadastro;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -40,10 +42,25 @@ public class Cadastro extends AppCompatActivity {
 
             // Tenta inserir o novo usuário no banco de dados
             if (userDAO.inserirNovoUsuario()) {
+                // Salva o nome no SharedPreferences após o cadastro bem-sucedido
+                saveNameInSharedPreferences(email, senha, nome, cpf);
+
                 Toast.makeText(Cadastro.this, "Usuário cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(Cadastro.this, "Falha ao cadastrar o usuário", Toast.LENGTH_SHORT).show();
             }
         });
     }
+
+    // Método para salvar o nome no SharedPreferences (fora do método onCreate)
+    public void saveNameInSharedPreferences(String email, String senha, String nome, String cpf) {
+        SharedPreferences sp = getSharedPreferences("app_Cassino", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("email", email);
+        editor.putString("senha", senha);
+        editor.putString("nome", nome);
+        editor.putString("cpf", cpf);
+        editor.apply();
+    }
 }
+

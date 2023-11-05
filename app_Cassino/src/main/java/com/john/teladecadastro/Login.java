@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.security.keystore.UserNotAuthenticatedException;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,25 +25,42 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         IniciarComponentes();
+
+        SharedPreferences sp = getSharedPreferences("app_Cassino", Context.MODE_PRIVATE);
+        String savedEmail = sp.getString("email", "");
+
+        if (!savedEmail.isEmpty()) {
+            Intent intent = new Intent(Login.this, pricipal.class);
+            startActivity(intent);
+            finish();
+        }
+
         text_cadastro.setOnClickListener(v -> {
             Intent intent = new Intent(Login.this, Cadastro.class);
             startActivity(intent);
         });
+
         bt_entrar.setOnClickListener(v -> {
-            SharedPreferences sp = getSharedPreferences("app_Cassino", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sp.edit();
-            editor.putString("email", edit_email.getText().toString());
-            editor.apply();
-            uDao = new UserDAO(getApplicationContext(),
-                    new User(edit_email.getText().toString(),
-                            edit_senha.getText().toString()));
+            String email = edit_email.getText().toString();
+            String senha = edit_senha.getText().toString();
+
+            uDao = new UserDAO(getApplicationContext(), new User(email, senha));
+
             if (uDao.verificarEmailESenha()) {
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString("email", email);
+
+                //recupera o nome durante a verificação do login
+                String nome = uDao.getNomeDoUsuario(email);
+                editor.putString("nome", nome);
+                editor.apply();
+
                 Intent intent = new Intent(Login.this, pricipal.class);
                 startActivity(intent);
+                finish();
             } else {
                 Toast.makeText(Login.this, "Dados incorretos", Toast.LENGTH_SHORT).show();
             }
-
         });
     }
 
@@ -51,6 +69,5 @@ public class Login extends AppCompatActivity {
         bt_entrar = findViewById(R.id.bt_entrar);
         edit_email = findViewById(R.id.edit_email);
         edit_senha = findViewById(R.id.edit_senha);
-
     }
 }
